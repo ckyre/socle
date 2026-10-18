@@ -1,0 +1,13 @@
+{
+  "name": "socle",
+  "version": "1.0.0",
+  "description": "Base CSS commune aux applications de la suite (accessibilité et comportements de base).",
+  "license": "UNLICENSED",
+  "private": false,
+  "files": ["css/socle.css"],
+  "style": "css/socle.css",
+  "exports": {
+    "./socle.css": "./css/socle.css",
+    "./package.json": "./package.json"
+  }
+}

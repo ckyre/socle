@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "socle"
+dynamic = ["version"]
+description = "Code commun aux applications de la suite : passerelle du portail, démarrage IPv4/IPv6, transfert de données."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+# serve.run
+serve = ["uvicorn>=0.30"]
+# transfert (export_router demande aussi FastAPI)
+transfert = ["sqlalchemy>=2.0", "httpx>=0.27"]
+
+[tool.hatch.version]
+path = "src/socle/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/socle"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/socle", "README.md"]

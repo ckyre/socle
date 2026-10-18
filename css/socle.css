@@ -1,0 +1,94 @@
+/*
+ * Socle CSS — base commune aux applications de la suite.
+ *
+ * Uniquement ce qui doit être identique partout (accessibilité, comportements de base) : aucune couleur, police
+ * ni mise en page n'est imposée. Chaque application garde son identité et branche le socle sur son thème :
+ *
+ *   :root { --socle-focus: var(--accent); }
+ *
+ * Tout est dans la couche « base » :
+ * - avec Tailwind 4, ces règles rejoignent sa propre couche base : les utilitaires gardent la priorité ;
+ * - sans Tailwind, toute règle de l'application (hors couche) l'emporte sur le socle.
+ *
+ * Importation : `@import "socle/socle.css";` (après `@import "tailwindcss";` le cas échéant).
+ */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+
+  img,
+  video {
+    height: auto;
+  }
+
+  /* Les champs reprennent la police de la page (et non celle du système). */
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Un élément masqué avec l'attribut hidden le reste, quelle que soit la règle display de l'application. */
+  [hidden] {
+    display: none !important;
+  }
+
+  /* Focus visible au clavier uniquement, à la couleur d'accent de l'application. */
+  :focus-visible {
+    outline: 2px solid var(--socle-focus, Highlight);
+    outline-offset: 2px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Texte réservé aux lecteurs d'écran. */
+  .sr-only,
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  /* Mouvements réduits : animations et transitions quasi instantanées, défilement sans animation. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
