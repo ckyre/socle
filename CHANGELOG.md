@@ -1,5 +1,11 @@
 # Historique
 
+## 1.0.1
+
+- `socle.css` réduit à l'accessibilité (box-sizing, `[hidden]`, focus visible, `.sr-only`, mouvements réduits) :
+  les règles sur les champs (`font`/`color: inherit`), les images et le `body` pouvaient changer l'apparence
+  d'une application (texte de champ illisible sur fond clair).
+
 ## 1.0.0
 
 Première version, qui remplace le code recopié dans chaque application :

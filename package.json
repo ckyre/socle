@@ -1,6 +1,6 @@
 {
   "name": "socle",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Base CSS commune aux applications de la suite (accessibilité et comportements de base).",
   "license": "UNLICENSED",
   "private": false,

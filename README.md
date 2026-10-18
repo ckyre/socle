@@ -14,14 +14,14 @@ Le dépôt est public : il ne contient aucun secret. La sécurité repose sur le
 | `socle.serve` | Démarre une application ASGI sur `$PORT` en IPv4 et IPv6 (Railway : réseau privé IPv6, test de santé IPv4), sans en-tête `Server`, sans faire confiance aux en-têtes `X-Forwarded-*`. |
 | `socle.passerelle` | Refuse toute requête qui ne porte pas le secret de la passerelle du portail (`X-Gateway-Secret`), sauf les chemins publics déclarés (test de santé). Ajoute `X-Robots-Tag`. Valide le secret au démarrage. Lit l'identité transmise (`Remote-User`, `Remote-Name`, `Remote-Email`, `Remote-Groups`). |
 | `socle.transfert` | Export/import JSON d'une base vers une autre, en une transaction, uniquement vers une base vide. Inactif tant qu'une application ne le branche pas. |
-| `css/socle.css` | Base CSS commune : focus visible, `.sr-only` / `.visually-hidden`, mouvements réduits, `[hidden]`, champs à la police de la page. Aucune couleur imposée. |
+| `css/socle.css` | Base CSS commune d'accessibilité : focus visible, `.sr-only` / `.visually-hidden`, mouvements réduits, `[hidden]`, `box-sizing`. Aucune couleur, police ni mise en page imposée. |
 
 ## Utilisation dans une application
 
 **Python** (`requirements.txt`) — archive d'une version précise, vérifiée par son empreinte :
 
 ```
-socle @ https://github.com/ckyre/socle/releases/download/v1.0.0/socle-1.0.0-py3-none-any.whl#sha256=<empreinte>
+socle @ https://github.com/ckyre/socle/releases/download/v1.0.1/socle-1.0.1-py3-none-any.whl#sha256=<empreinte>
 ```
 
 ```python
@@ -47,7 +47,7 @@ user = identity(request.headers, get_settings().gateway_secret)   # Identity(use
 **CSS** (`package.json`, l'empreinte est enregistrée dans `package-lock.json`) :
 
 ```
-"socle": "https://github.com/ckyre/socle/releases/download/v1.0.0/socle-1.0.0.tgz"
+"socle": "https://github.com/ckyre/socle/releases/download/v1.0.1/socle-1.0.1.tgz"
 ```
 
 ```css

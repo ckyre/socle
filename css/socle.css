@@ -1,8 +1,9 @@
 /*
  * Socle CSS — base commune aux applications de la suite.
  *
- * Uniquement ce qui doit être identique partout (accessibilité, comportements de base) : aucune couleur, police
- * ni mise en page n'est imposée. Chaque application garde son identité et branche le socle sur son thème :
+ * Uniquement ce qui doit être identique partout (accessibilité) : aucune couleur, police, taille ni mise en page
+ * n'est imposée, pour qu'adopter le socle ne change pas l'apparence d'une application. Chaque application garde
+ * son identité et branche le socle sur son thème :
  *
  *   :root { --socle-focus: var(--accent); }
  *
@@ -20,36 +21,6 @@
     box-sizing: border-box;
   }
 
-  html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
-
-  body {
-    margin: 0;
-  }
-
-  img,
-  svg,
-  video,
-  canvas {
-    max-width: 100%;
-  }
-
-  img,
-  video {
-    height: auto;
-  }
-
-  /* Les champs reprennent la police de la page (et non celle du système). */
-  button,
-  input,
-  select,
-  textarea {
-    font: inherit;
-    color: inherit;
-  }
-
   /* Un élément masqué avec l'attribut hidden le reste, quelle que soit la règle display de l'application. */
   [hidden] {
     display: none !important;
@@ -59,10 +30,6 @@
   :focus-visible {
     outline: 2px solid var(--socle-focus, Highlight);
     outline-offset: 2px;
-  }
-
-  :focus:not(:focus-visible) {
-    outline: none;
   }
 
   /* Texte réservé aux lecteurs d'écran. */
