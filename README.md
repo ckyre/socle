@@ -1,6 +1,7 @@
 # Socle
 
-Code commun aux applications de la suite (Charge, Codex, Fund, Mijote, Vigie, Notifications, Fichiers, Portail).
+Code commun aux applications de la suite (Besace, Charge, Codex, Fund, Hotte, Logis, Mijote, Vigie, Notifications, Fichiers,
+Portail).
 Une correction faite ici, publiée dans une nouvelle version, profite à toutes les applications : il suffit de
 mettre à jour la référence de version dans chacune (`scripts/mettre-a-jour.py`).
 
@@ -14,14 +15,15 @@ Le dépôt est public : il ne contient aucun secret. La sécurité repose sur le
 | `socle.serve` | Démarre une application ASGI sur `$PORT` en IPv4 et IPv6 (Railway : réseau privé IPv6, test de santé IPv4), sans en-tête `Server`, sans faire confiance aux en-têtes `X-Forwarded-*`. |
 | `socle.passerelle` | Refuse toute requête qui ne porte pas le secret de la passerelle du portail (`X-Gateway-Secret`), sauf les chemins publics déclarés (test de santé). Ajoute `X-Robots-Tag`. Valide le secret au démarrage. Lit l'identité transmise (`Remote-User`, `Remote-Name`, `Remote-Email`, `Remote-Groups`). |
 | `socle.transfert` | Export/import JSON d'une base vers une autre, en une transaction, uniquement vers une base vide. Inactif tant qu'une application ne le branche pas. |
-| `css/socle.css` | Base CSS commune d'accessibilité : focus visible, `.sr-only` / `.visually-hidden`, mouvements réduits, `[hidden]`, `box-sizing`. Aucune couleur, police ni mise en page imposée. |
+| `css/suite.css` | CSS commun de la suite, construit sur Tailwind 4 et mobile d'abord : jetons d'identité dans `@theme`, coquille mobile (`.app`, `.screen`, `.nav`, `.sheet`…), composants (`.btn`, `.input`, `.card`…) et primitives d'agencement. Voir [`css/README.md`](css/README.md). |
+| `css/socle.css` | Base d'accessibilité seule (déjà incluse dans `suite.css`) : focus visible, `.sr-only` / `.visually-hidden`, mouvements réduits, `[hidden]`, `box-sizing`. |
 
 ## Utilisation dans une application
 
 **Python** (`requirements.txt`) — archive d'une version précise, vérifiée par son empreinte :
 
 ```
-socle @ https://github.com/ckyre/socle/releases/download/v1.0.1/socle-1.0.1-py3-none-any.whl#sha256=<empreinte>
+socle @ https://github.com/ckyre/socle/releases/download/v1.1.0/socle-1.1.0-py3-none-any.whl#sha256=<empreinte>
 ```
 
 ```python
@@ -47,14 +49,20 @@ user = identity(request.headers, get_settings().gateway_secret)   # Identity(use
 **CSS** (`package.json`, l'empreinte est enregistrée dans `package-lock.json`) :
 
 ```
-"socle": "https://github.com/ckyre/socle/releases/download/v1.0.1/socle-1.0.1.tgz"
+"socle": "https://github.com/ckyre/socle/releases/download/v1.1.0/socle-1.1.0.tgz"
 ```
 
 ```css
-@import "tailwindcss";      /* le cas échéant */
-@import "socle/socle.css";
-:root { --socle-focus: var(--accent); }
+@import "socle/suite.css";   /* Tailwind 4 + tout le socle */
+@theme {                     /* identité de l'application */
+  --color-accent: #a8412a;
+  --font-display: "Fraunces", Georgia, serif;
+}
 ```
+
+Avec le plugin `@tailwindcss/vite` (ou `@tailwindcss/postcss`). Guide complet, jetons, composants et
+correspondance des anciennes classes : [`css/README.md`](css/README.md). Les applications qui n'ont pas encore
+migré gardent `@import "socle/socle.css";` (accessibilité seule), qui reste disponible.
 
 ## Publier une version
 
@@ -72,6 +80,16 @@ python socle/scripts/mettre-a-jour.py vX.Y.Z
 Le script met à jour la référence et l'empreinte dans chaque application ; il reste à tester et pousser chacune.
 
 ## Développement
+
+CSS : vérification (compilation Tailwind, jetons tous définis, couches) et page d'exemple
+`exemples/dist/index.html` :
+
+```sh
+npm install --no-save tailwindcss@4.3.3 @tailwindcss/node@4.3.3
+node scripts/verifier-css.mjs
+```
+
+Python :
 
 ```sh
 cd python

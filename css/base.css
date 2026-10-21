@@ -1,0 +1,44 @@
+/*
+ * Socle — base de la suite (couche « base »), en complément du preflight de Tailwind 4.
+ *
+ * Le preflight remet déjà tout à zéro (marges, listes, titres, images, contrôles qui héritent la police).
+ * On n'ajoute ici que ce que les applications de la suite recopiaient chacune : fond et encre du thème,
+ * hauteur d'écran mobile, curseur des boutons, couleur des textes de substitution.
+ * L'accessibilité commune (focus visible, .sr-only, mouvements réduits, [hidden]) est dans socle.css.
+ */
+
+@layer base {
+  :root {
+    --socle-focus: var(--color-focus); /* anneau de focus de socle.css, à la couleur du thème */
+  }
+
+  html {
+    color-scheme: var(--socle-scheme);
+    line-height: var(--socle-line-height);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--color-ground);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Tailwind 4 remet le curseur par défaut sur les boutons ; la suite garde la main. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  ::placeholder {
+    color: var(--color-faint);
+    opacity: 1;
+  }
+
+  /* Une <dialog class="sheet"> fermée reste masquée malgré le display du composant. */
+  dialog:not([open]) {
+    display: none !important;
+  }
+}

@@ -1,0 +1,101 @@
+/*
+ * Page d'exemple du socle : tous les composants, sous l'identité de chaque application.
+ * Construite par scripts/verifier-css.mjs (→ exemples/dist/index.html).
+ *
+ * Les thèmes sont posés à l'exécution (attribut data-theme) pour pouvoir passer de l'un à l'autre ; dans une
+ * application, les mêmes jetons vont simplement dans son @theme.
+ */
+
+@import "../css/suite.css";
+@source "./index.html";
+
+/* --- Identités : seules quelques couleurs et polices changent --------------- */
+
+:root[data-theme="hotte"] {
+  --color-ground: #fbf8f2;
+  --color-ink: #1b1b18;
+  --color-accent: #b3261e;
+  --color-ok: #1f4d3a;
+  --color-chip-active: #1f4d3a;
+  --color-on-chip-active: #fbf8f2;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+}
+
+:root[data-theme="logis"] {
+  --color-ground: #f3efe7;
+  --color-ink: #2f3a2e;
+  --color-accent: #4e6b4a;
+  --color-warn: #7a3e1c;
+  --color-danger: #a1441f;
+  --font-sans: "Outfit", system-ui, sans-serif;
+  --radius-control: 1rem;
+  --radius-card: 1.25rem;
+  --socle-control-border: none;
+  --socle-card-border: none;
+}
+
+:root[data-theme="besace"] {
+  --color-ground: #f4f5f2;
+  --color-ink: #1c2321;
+  --color-accent: #2f5d50;
+  --color-warn: #a04712;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --radius-card: 1rem;
+}
+
+:root[data-theme="mijote"] {
+  --color-ground: #f6f1e7;
+  --color-surface: #fffdf8;
+  --color-ink: #2b2620;
+  --color-accent: #a8412a;
+  --color-ok: #5e6b3a;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --radius-control: 0.625rem;
+  --radius-card: 0.75rem;
+}
+
+:root[data-theme="vigie"] {
+  --color-ground: #f3f0e8;
+  --color-ink: #17242c;
+  --color-accent: #1e4558;
+  --color-warn: #7a420c;
+  --color-badge: #e0892b;
+  --color-on-badge: #17242c;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --radius-control: 1rem;
+  --socle-control-border: none;
+  --socle-card-border: none;
+}
+
+:root[data-theme="charge"] {
+  --socle-scheme: dark;
+  --color-ground: #08090a;
+  --color-surface: #101214;
+  --color-ink: #ededea;
+  --color-accent: oklch(0.86 0.19 118);
+  --color-on-accent: #08090a;
+  --color-danger: #ff7a6b;
+  --color-on-danger: #08090a;
+  --color-ok: #7fe3b4;
+  --color-warn: #e8b36a;
+  --color-chip-active: oklch(0.86 0.19 118);
+  --color-on-chip-active: #08090a;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --radius-control: 0.5rem;
+  --radius-card: 0.75rem;
+}
+
+/* --- Propre à la page d'exemple -------------------------------------------- */
+
+.theme-picker {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: calc(var(--socle-safe-top) + 0.5rem) var(--spacing-gutter) 0.5rem;
+  background: color-mix(in oklab, var(--color-ground) 88%, transparent);
+  backdrop-filter: blur(8px);
+}

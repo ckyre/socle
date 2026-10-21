@@ -1,0 +1,115 @@
+/*
+ * Socle — jetons de la suite, dans le thème Tailwind 4.
+ *
+ * Chaque jeton du @theme crée ses utilitaires : --color-accent → bg-accent, text-accent, border-accent… ;
+ * --radius-card → rounded-card ; --spacing-gutter → p-gutter, mx-gutter… ; --container-app → max-w-app.
+ * Les composants du socle n'utilisent que ces variables.
+ *
+ * Une application prend son identité en redéfinissant quelques jetons dans son propre @theme, après l'import
+ * du socle (le dernier @theme l'emporte) :
+ *
+ *   @import "socle/suite.css";
+ *   @theme {
+ *     --color-ground: #f6f1e7;
+ *     --color-ink: #2b2620;
+ *     --color-accent: #a8412a;
+ *     --font-display: "Fraunces", Georgia, serif;
+ *   }
+ *
+ * Les couleurs « dérivées » (encre secondaire, traits, fonds pâles…) sont calculées par color-mix à partir de
+ * --color-ink, --color-ground, --color-surface et --color-accent : régler ces quatre-là suffit pour un thème
+ * cohérent, clair comme sombre. Tout jeton dérivé peut être fixé à la main.
+ *
+ * « static » : toutes les variables sont émises, même si aucune classe ne les utilise (les composants et le CSS
+ * propre de chaque application s'en servent).
+ *
+ * Contrastes des valeurs par défaut (WCAG) : muted ≥ 5,8:1 sur le fond, field ≥ 3:1 sur une surface (bord de
+ * champ, critère 1.4.11), accent ≥ 7:1 sur blanc.
+ */
+
+@theme static {
+  /* --- Couleurs de base (à régler par application) ----------------------- */
+  --color-ground: #f5f3ee; /* fond de page */
+  --color-surface: #ffffff; /* cartes, champs, barres, boutons neutres */
+  --color-ink: #1d1f1c; /* texte principal */
+  --color-accent: #2f5d50; /* action principale, onglet actif, interrupteur */
+  --color-on-accent: #ffffff; /* texte posé sur l'accent */
+  --color-ok: #2f6b4f;
+  --color-warn: #8a5a00;
+  --color-danger: #a3361f;
+  --color-on-danger: #ffffff;
+
+  /* --- Couleurs dérivées (calculées, réglables) -------------------------- */
+  --color-ink-2: color-mix(in oklab, var(--color-ink) 80%, var(--color-ground)); /* texte secondaire */
+  --color-muted: color-mix(in oklab, var(--color-ink) 66%, var(--color-ground)); /* légendes, aides */
+  --color-faint: color-mix(in oklab, var(--color-ink) 50%, var(--color-ground)); /* textes de substitution */
+  --color-field: color-mix(in oklab, var(--color-ink) 42%, var(--color-surface)); /* bord des champs */
+  --color-dash: var(--color-field); /* pointillés : ajouts, états vides */
+  --color-line: color-mix(in oklab, var(--color-ink) 12%, var(--color-surface)); /* séparateurs, bords de carte */
+  --color-surface-2: color-mix(in oklab, var(--color-ink) 6%, var(--color-surface)); /* zones en retrait */
+  --color-bar: var(--color-surface); /* barre de navigation et barre du haut */
+  --color-sheet: var(--color-ground); /* fond des feuilles (modales) */
+  --color-accent-strong: color-mix(in oklab, var(--color-accent) 80%, #000); /* survol de l'accent */
+  --color-accent-soft: color-mix(in oklab, var(--color-accent) 12%, var(--color-surface)); /* fond pâle */
+  --color-accent-ink: var(--color-accent); /* accent en couleur de texte (à foncer si l'accent est clair) */
+  --color-ok-soft: color-mix(in oklab, var(--color-ok) 12%, var(--color-surface));
+  --color-warn-soft: color-mix(in oklab, var(--color-warn) 14%, var(--color-surface));
+  --color-danger-soft: color-mix(in oklab, var(--color-danger) 12%, var(--color-surface));
+  --color-overlay: color-mix(in oklab, color-mix(in oklab, var(--color-ink) 30%, #000) 45%, transparent); /* fond derrière une feuille, sombre sur tout thème */
+  --color-focus: var(--color-accent); /* anneau de focus */
+  --color-chip-active: var(--color-ink); /* pastille sélectionnée */
+  --color-on-chip-active: var(--color-ground);
+  --color-nav-indicator: var(--color-accent-soft); /* fond de l'icône de l'onglet actif (transparent : aucun) */
+  --color-badge: var(--color-accent); /* compteur sur un onglet */
+  --color-on-badge: var(--color-on-accent);
+
+  /* --- Typographie ------------------------------------------------------- */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-sans); /* titres : une serif (Fraunces…) ou la même que le texte */
+  --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
+  /* Échelle de Tailwind (text-xs 12px, text-sm 14px, text-base 16px, text-lg…) complétée de (taille seule,
+     l'interligne reste celui du texte) : */
+  --text-caption: 0.8125rem; /* 13px : aides, légendes */
+  --text-control: 0.9375rem; /* 15px : boutons, lignes de liste */
+  --text-h1: clamp(1.75rem, 1.45rem + 1.4vw, 2.25rem); /* 28px sur téléphone → 36px */
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.01em;
+
+  /* --- Dimensions -------------------------------------------------------- */
+  --container-app: 35rem; /* max-w-app, largeur de la colonne (560px) ; 75rem pour une app de bureau */
+  --spacing-gutter: 1.25rem; /* marge latérale des écrans */
+  --spacing-gap: 1.5rem; /* espace entre les blocs d'un écran */
+  --spacing-tap: 2.75rem; /* 44px : cible tactile minimale (size-tap, min-h-tap) */
+  --spacing-control: 3rem; /* hauteur des boutons et champs (h-control) */
+  --spacing-control-lg: 3.5rem;
+  --spacing-nav: 4rem; /* hauteur de la barre de navigation du bas */
+  --radius-control: 0.75rem; /* boutons, champs */
+  --radius-card: 1.25rem;
+  --radius-sheet: 1.5rem;
+  --radius-pill: 999px; /* pastilles, interrupteurs (rounded-pill) */
+  --shadow-float: 0 6px 24px color-mix(in oklab, var(--color-ink) 10%, transparent);
+  --shadow-raised: 0 12px 32px color-mix(in oklab, var(--color-ink) 22%, transparent);
+  --ease-socle: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Réglages sans utilitaire associé. */
+@layer theme {
+  :root {
+    --socle-scheme: light; /* light | dark : contrôles natifs, barres de défilement */
+    --socle-display-weight: 600; /* graisse des titres */
+    --socle-line-height: 1.5; /* interligne du texte courant ; « normal » pour une interface plus dense */
+    --socle-control-border: 1px solid var(--color-field); /* « none » : champs et boutons sans bord (Logis, Vigie) */
+    --socle-card-border: 1px solid var(--color-line); /* « none » : cartes sans bord */
+    --socle-duration: 180ms;
+
+    /* Zones sûres (encoche, barre d'accueil). Nécessite viewport-fit=cover dans <meta name="viewport">. */
+    --socle-safe-top: env(safe-area-inset-top, 0px);
+    --socle-safe-right: env(safe-area-inset-right, 0px);
+    --socle-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --socle-safe-left: env(safe-area-inset-left, 0px);
+
+    /* Hauteur occupée en bas de l'écran par les barres fixes (navigation, barre d'actions), calculée par
+       mise-en-page.css selon ce qui est affiché : .screen, .toast et .fab s'en servent pour ne rien masquer. */
+    --socle-bottom-offset: 0px;
+  }
+}

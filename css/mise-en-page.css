@@ -1,0 +1,394 @@
+/*
+ * Socle — coquille mobile commune (couche « components »).
+ *
+ * Mobile d'abord : tout est écrit pour un téléphone ; les écrans plus larges sont des ajouts, avec les points de
+ * rupture de Tailwind (@variant sm = 40rem, md = 48rem…).
+ * Une colonne centrée de --container-app ; les barres fixes (navigation, actions, bouton flottant) restent
+ * alignées sur cette colonne, quelle que soit la largeur de la fenêtre.
+ *
+ *   <div class="app">
+ *     <main class="screen">…</main>
+ *     <nav class="nav" aria-label="Navigation principale">
+ *       <a href="/" aria-current="page"><span class="nav-icon">…</span>Accueil</a>
+ *     </nav>
+ *   </div>
+ */
+
+@layer components {
+  /* --- Hauteur occupée en bas par les barres fixes ------------------------ */
+
+  :root:has(.nav) {
+    --socle-bottom-offset: calc(var(--spacing-nav) + var(--socle-safe-bottom));
+  }
+
+  :root:has(.nav-floating) {
+    --socle-bottom-offset: calc(var(--spacing-nav) + var(--socle-safe-bottom) + 1.5rem);
+  }
+
+  :root:has(.action-bar) {
+    --socle-bottom-offset: calc(var(--spacing-control) + var(--socle-safe-bottom) + 2rem);
+  }
+
+  /* --- Colonne et écrans -------------------------------------------------- */
+
+  .app {
+    position: relative;
+    width: 100%;
+    max-width: var(--container-app);
+    min-height: 100dvh;
+    margin-inline: auto;
+  }
+
+  .screen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-gap);
+    padding-top: calc(var(--socle-safe-top) + 1.5rem);
+    padding-inline: max(var(--spacing-gutter), var(--socle-safe-left)) max(var(--spacing-gutter), var(--socle-safe-right));
+    padding-bottom: calc(max(var(--socle-bottom-offset), var(--socle-safe-bottom)) + 2rem);
+  }
+
+  /* Écran sans marges en haut ni sur les côtés : un en-tête pleine largeur (.screen-head) suivi du contenu. */
+  .screen-flush {
+    padding-top: 0;
+    padding-inline: 0;
+  }
+
+  .screen-flush > :not(.screen-head) {
+    margin-inline: max(var(--spacing-gutter), var(--socle-safe-left)) max(var(--spacing-gutter), var(--socle-safe-right));
+  }
+
+  .screen-head {
+    padding: calc(var(--socle-safe-top) + 1.125rem) var(--spacing-gutter) 1.5rem;
+    border-radius: 0 0 calc(var(--radius-sheet) + 0.5rem) calc(var(--radius-sheet) + 0.5rem);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  /* Écran centré : connexion, chargement, erreur. */
+  .center-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 100dvh;
+    padding: calc(var(--socle-safe-top) + 1.5rem) var(--spacing-gutter) calc(var(--socle-safe-bottom) + 1.5rem);
+    text-align: center;
+  }
+
+  @variant sm {
+    .screen {
+      padding-top: calc(var(--socle-safe-top) + 2.5rem);
+    }
+  }
+
+  /* --- Barre du haut ------------------------------------------------------ */
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: calc(var(--spacing-tap) + 1rem + var(--socle-safe-top));
+    padding: calc(var(--socle-safe-top) + 0.5rem) 0.5rem 0.5rem;
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-bar);
+  }
+
+  .topbar-title {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow: hidden;
+    padding-inline: 0.25rem;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--socle-display-weight);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* --- Navigation du bas -------------------------------------------------- */
+
+  .nav {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: stretch;
+    height: calc(var(--spacing-nav) + var(--socle-safe-bottom));
+    padding: 0 max(0.5rem, calc((100% - var(--container-app)) / 2 + 0.5rem)) var(--socle-safe-bottom);
+    border-top: 1px solid var(--color-line);
+    background: var(--color-bar);
+  }
+
+  /* Ancien gabarit <nav><div class="nav-inner">…</div></nav> : le conteneur s'efface. */
+  .nav-inner {
+    display: contents;
+  }
+
+  .nav a,
+  .nav button {
+    flex: 1 1 0%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1875rem;
+    padding: 0.375rem 0.25rem;
+    border: 0;
+    background: none;
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .nav [aria-current="page"],
+  .nav .active {
+    color: var(--color-accent-ink);
+    font-weight: 600;
+  }
+
+  .nav-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1875rem 1rem;
+    border-radius: var(--radius-pill);
+    transition: background-color var(--socle-duration) var(--ease-socle);
+  }
+
+  .nav [aria-current="page"] .nav-icon,
+  .nav .active .nav-icon {
+    background: var(--color-nav-indicator);
+  }
+
+  .nav-icon > .badge-count {
+    position: absolute;
+    top: -0.25rem;
+    inset-inline-end: 0.25rem;
+  }
+
+  /* Variante flottante : une pilule détachée du bord (Logis, Vigie). */
+  .nav-floating {
+    inset-inline: max(0.75rem, calc((100% - var(--container-app)) / 2 + 0.5rem));
+    bottom: calc(var(--socle-safe-bottom) + 0.75rem);
+    height: var(--spacing-nav);
+    padding: 0 0.5rem;
+    border: 0;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-float);
+  }
+
+  /* --- Barre d'actions du bas (formulaire, liste en cours) ---------------- */
+
+  .action-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 15;
+    display: flex;
+    gap: 0.625rem;
+    padding: 1rem max(var(--spacing-gutter), calc((100% - var(--container-app)) / 2 + var(--spacing-gutter)))
+      calc(var(--socle-safe-bottom) + 1rem);
+    background: linear-gradient(to bottom, transparent, var(--color-ground) 1.25rem);
+    pointer-events: none;
+  }
+
+  .action-bar > * {
+    flex: 1 1 auto;
+    pointer-events: auto;
+  }
+
+  /* --- Bouton flottant ---------------------------------------------------- */
+
+  .fab {
+    position: fixed;
+    inset-inline-end: max(var(--spacing-gutter), calc((100% - var(--container-app)) / 2 + var(--spacing-gutter)));
+    bottom: calc(max(var(--socle-bottom-offset), var(--socle-safe-bottom)) + 1rem);
+    z-index: 15;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-card);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: var(--shadow-raised);
+    text-decoration: none;
+    transition: background-color var(--socle-duration), transform 80ms;
+  }
+
+  .fab:active {
+    transform: scale(0.96);
+  }
+
+  .fab {
+    @variant hover {
+      background: var(--color-accent-strong);
+    }
+  }
+
+  /* --- Feuille (modale qui monte du bas ; fenêtre centrée sur grand écran) - */
+
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: var(--color-overlay);
+    animation: socle-fade var(--socle-duration) ease-out both;
+  }
+
+  .sheet {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: var(--container-app);
+    max-height: calc(100dvh - var(--socle-safe-top) - 1.5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.625rem var(--spacing-gutter) calc(var(--socle-safe-bottom) + 1.5rem);
+    border: 0;
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+    background: var(--color-sheet);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-raised);
+    animation: socle-rise 220ms var(--ease-socle) both;
+  }
+
+  /* <dialog class="sheet"> ouverte avec showModal() : même rendu, le fond est le ::backdrop natif. */
+  :where(dialog).sheet {
+    margin: auto auto 0;
+  }
+
+  dialog.sheet::backdrop {
+    background: var(--color-overlay);
+    animation: socle-fade var(--socle-duration) ease-out both;
+  }
+
+  .sheet-handle {
+    flex: none;
+    align-self: center;
+    width: 2.5rem;
+    height: 0.25rem;
+    border-radius: 2px;
+    background: var(--color-field);
+  }
+
+  .sheet-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: var(--socle-display-weight);
+    line-height: 1.15;
+  }
+
+  /* Bouton de validation collé en bas de la feuille pendant le défilement. */
+  .sheet-footer {
+    position: sticky;
+    bottom: calc(-1 * (var(--socle-safe-bottom) + 1.5rem));
+    display: flex;
+    gap: 0.625rem;
+    margin: 0.25rem calc(-1 * var(--spacing-gutter)) calc(-1 * (var(--socle-safe-bottom) + 1.5rem));
+    padding: 0.875rem var(--spacing-gutter) calc(var(--socle-safe-bottom) + 1.5rem);
+    background: linear-gradient(to bottom, transparent, var(--color-sheet) 1rem);
+  }
+
+  .sheet-footer > * {
+    flex: 1 1 auto;
+  }
+
+  @variant sm {
+    .sheet-backdrop {
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .sheet {
+      max-height: calc(100dvh - 4rem);
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-radius: var(--radius-sheet);
+      animation-name: socle-pop;
+    }
+
+    :where(dialog).sheet {
+      margin: auto;
+    }
+
+    .sheet-handle {
+      display: none;
+    }
+
+    .sheet-footer {
+      bottom: -1.5rem;
+      margin-bottom: -1.5rem;
+      padding-bottom: 1.5rem;
+    }
+  }
+
+  /* --- Message éphémère --------------------------------------------------- */
+
+  .toast {
+    position: fixed;
+    inset-inline: 0;
+    bottom: calc(max(var(--socle-bottom-offset), var(--socle-safe-bottom)) + 1rem);
+    z-index: 60;
+    width: fit-content;
+    max-width: min(calc(var(--container-app) - 2 * var(--spacing-gutter)), calc(100% - 2rem));
+    margin-inline: auto;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-control);
+    background: var(--color-ink);
+    color: var(--color-ground);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    box-shadow: var(--shadow-raised);
+    animation: socle-rise 220ms var(--ease-socle) both;
+  }
+
+  .toast-error {
+    background: var(--color-danger);
+    color: var(--color-on-danger);
+  }
+}
+
+@keyframes socle-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes socle-rise {
+  from {
+    opacity: 0.6;
+    transform: translateY(1.5rem);
+  }
+}
+
+@keyframes socle-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes socle-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

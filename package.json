@@ -1,13 +1,32 @@
 {
   "name": "socle",
-  "version": "1.0.1",
-  "description": "Base CSS commune aux applications de la suite (accessibilité et comportements de base).",
+  "version": "1.1.0",
+  "description": "CSS commun aux applications de la suite, construit sur Tailwind 4 (jetons, base, coquille mobile, composants) et base d'accessibilité.",
   "license": "UNLICENSED",
   "private": false,
-  "files": ["css/socle.css"],
-  "style": "css/socle.css",
+  "files": ["css/*.css"],
+  "style": "css/suite.css",
   "exports": {
+    ".": {
+      "style": "./css/suite.css",
+      "default": "./css/suite.css"
+    },
+    "./suite.css": "./css/suite.css",
+    "./kit.css": "./css/kit.css",
     "./socle.css": "./css/socle.css",
+    "./jetons.css": "./css/jetons.css",
+    "./base.css": "./css/base.css",
+    "./mise-en-page.css": "./css/mise-en-page.css",
+    "./composants.css": "./css/composants.css",
+    "./utilitaires.css": "./css/utilitaires.css",
     "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4.1.0"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
   }
 }

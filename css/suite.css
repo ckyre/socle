@@ -1,0 +1,16 @@
+/*
+ * Socle — CSS commun à toutes les applications de la suite, construit sur Tailwind 4.
+ *
+ *   @import "socle/suite.css";
+ *   @theme {                       ← identité de l'application (voir jetons.css)
+ *     --color-accent: #a8412a;
+ *   }
+ *   @layer components { … }        ← ajustements et classes propres à l'application (voir README)
+ *
+ * Contenu : Tailwind (preflight, thème, utilitaires) + jetons de la suite + accessibilité + base
+ * + coquille mobile (.app, .screen, .nav, .sheet…) + composants (.btn, .input, .card…) + agencements (.stack, .row…).
+ * Priorités : thème < base < composants < utilitaires < CSS de l'application hors couche.
+ */
+
+@import "tailwindcss";
+@import "./kit.css";

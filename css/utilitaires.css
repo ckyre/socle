@@ -1,0 +1,51 @@
+/*
+ * Socle — primitives d'agencement de la suite (couche « components »).
+ *
+ * Les quelques agencements que toutes les applications répétaient. Ils sont dans la couche components, comme
+ * des composants : une classe de l'application peut les ajuster (.form { gap: 22px } posé sur une .stack) et
+ * les utilitaires Tailwind les corrigent (class="stack gap-4"). Pour le reste, Tailwind : flex, gap-*,
+ * truncate, tabular-nums…
+ */
+
+@layer components {
+  /* Pile verticale : <div class="stack"> ; l'écart se règle avec gap-* (gap-4). */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  /* Ligne alignée au centre. */
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  /* Ligne aux deux extrémités (titre à gauche, action à droite). */
+  .spread {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  /* Éléments qui passent à la ligne (pastilles, boutons). */
+  .cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Prend la place restante sans déborder (texte long dans une ligne). */
+  .fill {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  /* Trait entre les enfants directs. */
+  .divided > * + * {
+    border-top: 1px solid var(--color-line);
+  }
+}

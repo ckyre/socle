@@ -1,0 +1,17 @@
+/*
+ * Socle — kit CSS de la suite, sans l'import de Tailwind.
+ *
+ * Pour une application qui importe Tailwind elle-même (avec des options, par exemple) :
+ *
+ *   @import "tailwindcss" source("../src");
+ *   @import "socle/kit.css";
+ *
+ * Sinon, importer simplement socle/suite.css.
+ */
+
+@import "./jetons.css";
+@import "./socle.css";
+@import "./base.css";
+@import "./mise-en-page.css";
+@import "./composants.css";
+@import "./utilitaires.css";
