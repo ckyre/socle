@@ -36,8 +36,20 @@ jobs:
           TEST_PG_URL: postgresql+psycopg://postgres:postgres@localhost:5432/postgres
         run: python -m pytest -q python/tests
 
+  css:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Vérification du CSS (Tailwind 4)
+        run: |
+          npm install --no-save --no-package-lock tailwindcss@4.3.3 @tailwindcss/node@4.3.3
+          node scripts/verifier-css.mjs
+
   version:
-    needs: tests
+    needs: [tests, css]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     permissions:
