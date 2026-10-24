@@ -159,7 +159,7 @@ export function effacerPastille() {
 // État affiché : pastille (texte, variante) et, seulement quand l'utilisateur doit agir, une ligne d'aide courte.
 const ETATS = {
   actif: { pastille: "Activées", variante: "pill-ok" },
-  inactif: { pastille: "Désactivées", variante: "" },
+  inactif: {}, // pas de pastille : le bouton « Activer » prend sa place
   refuse: { pastille: "Bloquées", variante: "pill-warn", aide: "À autoriser dans les réglages de l'appareil." },
   installer: { pastille: "Indisponible", variante: "", aide: "Ajoutez d'abord l'application à l'écran d'accueil." },
   "non-supporte": { pastille: "Indisponible", variante: "", aide: "Navigateur non compatible." },
@@ -285,17 +285,19 @@ class SoclePush extends HTMLElement {
     sous.style.margin = "0";
     textes.append(sous);
     tete.append(tuile, textes);
-    if (etat) tete.append(el("span", `pill ${etat.variante}`.trim(), etat.pastille));
+    if (cle === "inactif") {
+      tete.append(this.#bouton("Activer", "btn-primary", async () => {
+        await activerPush({ base: this.base });
+        return { texte: "Notifications activées." };
+      }));
+    } else if (etat?.pastille) {
+      tete.append(el("span", `pill ${etat.variante}`.trim(), etat.pastille));
+    }
     carte.append(tete);
 
     const actions = el("div", "row");
     Object.assign(actions.style, { flexWrap: "wrap", gap: "8px" });
-    if (cle === "inactif") {
-      actions.append(this.#bouton("Activer", "btn-primary", async () => {
-        await activerPush({ base: this.base });
-        return { texte: "Notifications activées." };
-      }));
-    } else if (cle === "actif") {
+    if (cle === "actif") {
       actions.append(
         this.#bouton("Envoyer un essai", "btn-soft", async () => {
           const n = await testerPush({ base: this.base });

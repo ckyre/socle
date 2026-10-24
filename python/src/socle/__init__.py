@@ -3,4 +3,4 @@
 Une correction ici, publiée dans une nouvelle version, profite à toutes les applications qui la référencent.
 """
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"

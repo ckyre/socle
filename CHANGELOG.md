@@ -1,5 +1,10 @@
 # Historique
 
+## 1.2.4
+
+- `<socle-push>` : quand les notifications ne sont pas activées, le bouton « Activer » se place sur la ligne
+  « Cet appareil », à la place de la pastille « Désactivées » (supprimée).
+
 ## 1.2.3
 
 - `<socle-push>` redessiné : pictogramme de l'appareil (téléphone ou écran), titre « Cet appareil », nom de l'appareil,
