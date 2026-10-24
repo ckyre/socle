@@ -1,5 +1,17 @@
 # Historique
 
+## 1.3.0
+
+- **`socle.notifications`** (Python, bibliothèque standard seulement) : `Notifier` envoie une notification au
+  service Notifications (clé de l'application, erreurs typées : `NotificationError.permanent`) ;
+  `Periodic` appelle une vérification toutes les N secondes dans un fil (« y a-t-il quelque chose à envoyer ? ») ;
+  `portal_username("portail:romy")`, `enumerate_fr(["lait", "œufs", "beurre"])` → « lait, œufs et beurre ».
+  Utilisé par Mijote (liste de courses, menu vide), Logis (entretien du jour) et Fund (budget du mois).
+- `socle/push` garde le service worker propre à une application (Mijote, hors ligne) au lieu de le remplacer par
+  `/socle-sw.js` ; ce service worker importe `socle/sw.js` pour afficher les notifications.
+- `scripts/mettre-a-jour.py` : met aussi à jour les lignes `socle @ …` suivies d'un commentaire (elles restaient à
+  l'ancienne version).
+
 ## 1.2.4
 
 - `<socle-push>` : quand les notifications ne sont pas activées, le bouton « Activer » se place sur la ligne

@@ -47,7 +47,8 @@ def main() -> int:
     racine = Path.cwd()
     for req in fichiers(racine, "requirements*.txt"):
         texte = req.read_text(encoding="utf-8")
-        nouveau = re.sub(r"(?m)^socle @ \S+$", ligne, texte)
+        # La ligne entière, commentaire compris (« socle @ … # code commun ») : sinon elle restait à l'ancienne version.
+        nouveau = re.sub(r"(?m)^socle @ \S+.*$", ligne, texte)
         if nouveau != texte:
             req.write_text(nouveau, encoding="utf-8", newline="")
             print(f"Python : {req.relative_to(racine)}", flush=True)

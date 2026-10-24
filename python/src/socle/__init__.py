@@ -1,6 +1,6 @@
-"""Socle : code commun aux applications de la suite (passerelle du portail, démarrage, transfert de données).
+"""Socle : code commun aux applications de la suite (passerelle du portail, démarrage, transfert de données, notifications).
 
 Une correction ici, publiée dans une nouvelle version, profite à toutes les applications qui la référencent.
 """
 
-__version__ = "1.2.4"
+__version__ = "1.3.0"

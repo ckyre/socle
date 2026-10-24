@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "socle"
 dynamic = ["version"]
-description = "Code commun aux applications de la suite : passerelle du portail, démarrage IPv4/IPv6, transfert de données."
+description = "Code commun aux applications de la suite : passerelle du portail, démarrage IPv4/IPv6, transfert de données, notifications."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []

@@ -14,6 +14,7 @@ Le dépôt est public : il ne contient aucun secret. La sécurité repose sur le
 | --- | --- |
 | `socle.serve` | Démarre une application ASGI sur `$PORT` en IPv4 et IPv6 (Railway : réseau privé IPv6, test de santé IPv4), sans en-tête `Server`, sans faire confiance aux en-têtes `X-Forwarded-*`. |
 | `socle.passerelle` | Refuse toute requête qui ne porte pas le secret de la passerelle du portail (`X-Gateway-Secret`), sauf les chemins publics déclarés (test de santé). Ajoute `X-Robots-Tag`. Valide le secret au démarrage. Lit l'identité transmise (`Remote-User`, `Remote-Name`, `Remote-Email`, `Remote-Groups`). |
+| `socle.notifications` | Envoi d'une notification au service Notifications (`Notifier`) et tâche de fond périodique (`Periodic`) pour les rappels planifiés. |
 | `socle.transfert` | Export/import JSON d'une base vers une autre, en une transaction, uniquement vers une base vide. Inactif tant qu'une application ne le branche pas. |
 | `css/suite.css` | CSS commun de la suite, construit sur Tailwind 4 et mobile d'abord : jetons d'identité dans `@theme`, coquille mobile (`.app`, `.screen`, `.nav`, `.sheet`…), composants (`.btn`, `.input`, `.card`…) et primitives d'agencement. Voir [`css/README.md`](css/README.md). |
 | `js/push.js` (`socle/push`) | Notifications push côté navigateur : élément `<socle-push>` (activer, tester, désactiver sur cet appareil), fonctions `activerPush`, `etatPush`…, pastille de l'icône effacée à l'ouverture. |

@@ -11,6 +11,7 @@
 //
 // iOS / iPadOS (16.4+) : uniquement dans une application ajoutée à l'écran d'accueil, et l'activation doit suivre un
 // geste de l'utilisateur (bouton). Le service worker (/socle-sw.js) est servi par le greffon « socle/vite ».
+// Une application qui a déjà son propre service worker l'utilise : il suffit qu'il importe « socle/sw.js ».
 
 export const BASE_PAR_DEFAUT = "/__notifications/push";
 export const SERVICE_WORKER = "/socle-sw.js";
@@ -75,6 +76,11 @@ function memeCle(a, b) {
 }
 
 async function enregistrement(base) {
+  // Une application qui a déjà son propre service worker (hors ligne…) le garde : il doit importer
+  // « socle/sw.js » pour afficher les notifications. Le remplacer par /socle-sw.js casserait l'application.
+  const existant = await navigator.serviceWorker.getRegistration("/");
+  const script = (existant?.active ?? existant?.waiting ?? existant?.installing)?.scriptURL ?? "";
+  if (script && new URL(script).pathname !== SERVICE_WORKER) return navigator.serviceWorker.ready;
   const url = `${SERVICE_WORKER}?base=${encodeURIComponent(base)}`;
   await navigator.serviceWorker.register(url, { scope: "/" });
   return navigator.serviceWorker.ready;

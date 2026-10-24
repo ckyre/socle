@@ -5,6 +5,9 @@
  *
  * L'adresse d'abonnement (?base=…) est passée dans l'URL du script : elle sert à réabonner l'appareil quand le
  * navigateur renouvelle son abonnement (pushsubscriptionchange).
+ *
+ * Une application qui a son propre service worker l'importe au lieu d'utiliser /socle-sw.js :
+ *     import "socle/sw.js";   // dans src/sw.ts (vite-plugin-pwa, workbox…)
  */
 
 const BASE = new URL(self.location.href).searchParams.get("base") || "/__notifications/push";
