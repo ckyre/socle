@@ -1,6 +1,6 @@
 {
   "name": "socle",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Code commun aux fronts de la suite : CSS (Tailwind 4 : jetons, base, coquille mobile, composants), notifications push (module navigateur, service worker, greffon Vite).",
   "license": "UNLICENSED",
   "private": false,

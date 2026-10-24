@@ -1,5 +1,11 @@
 # Historique
 
+## 1.2.3
+
+- `<socle-push>` redessiné : pictogramme de l'appareil (téléphone ou écran), titre « Cet appareil », nom de l'appareil,
+  pastille d'état (Activées, Désactivées, Bloquées, Indisponible). Une ligne d'aide courte n'apparaît que lorsqu'il
+  faut agir (écran d'accueil, autorisation).
+
 ## 1.2.2
 
 - `<socle-push>` : les propriétés `base` et `titre` acceptent une valeur. React 19 passe les attributs d'un élément

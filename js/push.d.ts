@@ -27,7 +27,7 @@ export declare function effacerPastille(): void;
 /** <socle-push base="…" titre="…"></socle-push> dans le JSX de React (18 et 19). */
 type AttributsSoclePush = {
   base?: string;
-  titre?: string;
+  titre?: string; // défaut : « Cet appareil »
   className?: string;
   id?: string;
   ref?: import("react").Ref<HTMLElement>;

@@ -156,14 +156,34 @@ export function effacerPastille() {
 
 // --- <socle-push> -----------------------------------------------------------------------------
 
-const MESSAGES = {
-  "non-supporte": "Ce navigateur ne reçoit pas de notifications push.",
-  installer: "Sur iPhone et iPad, ajoutez d'abord l'application à l'écran d'accueil (Partager → « Sur l'écran d'accueil »), puis ouvrez-la depuis son icône.",
-  "non-configure": "Les notifications push ne sont pas configurées sur le serveur.",
-  refuse: "Notifications bloquées pour cette application : autorisez-les dans les réglages de l'appareil.",
-  inactif: "Recevez les notifications de cette application sur cet appareil, même quand elle est fermée.",
-  actif: "Activées sur cet appareil. Les canaux de chaque application se règlent dans le portail.",
+// État affiché : pastille (texte, variante) et, seulement quand l'utilisateur doit agir, une ligne d'aide courte.
+const ETATS = {
+  actif: { pastille: "Activées", variante: "pill-ok" },
+  inactif: { pastille: "Désactivées", variante: "" },
+  refuse: { pastille: "Bloquées", variante: "pill-warn", aide: "À autoriser dans les réglages de l'appareil." },
+  installer: { pastille: "Indisponible", variante: "", aide: "Ajoutez d'abord l'application à l'écran d'accueil." },
+  "non-supporte": { pastille: "Indisponible", variante: "", aide: "Navigateur non compatible." },
+  "non-configure": { pastille: "Indisponible", variante: "", aide: "Push non configuré sur le serveur." },
 };
+
+// Pictogrammes Lucide (licence ISC, lucide.dev) : téléphone ou écran selon l'appareil.
+const PICTOS = {
+  telephone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
+  ecran: '<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>',
+};
+
+function picto(nom) {
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  for (const [k, v] of Object.entries({ viewBox: "0 0 24 24", width: "20", height: "20", fill: "none", stroke: "currentColor",
+    "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true" })) svg.setAttribute(k, v);
+  svg.innerHTML = PICTOS[nom];
+  return svg;
+}
+
+function estMobile() {
+  return estIOS() || /Android/.test(navigator.userAgent);
+}
 
 class SoclePush extends HTMLElement {
   #etat = null;
@@ -184,7 +204,7 @@ class SoclePush extends HTMLElement {
   }
 
   get titre() {
-    return this.getAttribute("titre") || "Notifications sur cet appareil";
+    return this.getAttribute("titre") || "Cet appareil";
   }
 
   set titre(valeur) {
@@ -242,34 +262,34 @@ class SoclePush extends HTMLElement {
     const e = this.#etat;
     const cle = !e ? null : e.possible !== "ok" ? e.possible : e.configure === false ? "non-configure"
       : e.permission === "denied" ? "refuse" : e.abonne ? "actif" : "inactif";
+    const etat = cle ? ETATS[cle] : null;
+    const el = (tag, classe, texte) => {
+      const n = document.createElement(tag);
+      if (classe) n.className = classe;
+      if (texte != null) n.textContent = texte;
+      return n;
+    };
 
-    const carte = document.createElement("div");
-    carte.className = "socle-push stack";
-    carte.style.gap = "10px";
+    const carte = el("div", "socle-push stack");
+    carte.style.gap = "12px";
 
-    const tete = document.createElement("div");
-    tete.className = "spread";
-    const titre = document.createElement("strong");
-    titre.textContent = this.titre;
-    tete.append(titre);
-    if (cle === "actif") {
-      const pastille = document.createElement("span");
-      pastille.className = "pill pill-ok";
-      pastille.textContent = "Activées";
-      tete.append(pastille);
-    }
+    // Ligne d'identité : pictogramme de l'appareil, titre, nom de l'appareil, pastille d'état.
+    const tete = el("div", "row");
+    Object.assign(tete.style, { gap: "12px", alignItems: "center" });
+    const tuile = el("span", "icon-tile");
+    tuile.append(picto(estMobile() ? "telephone" : "ecran"));
+    const textes = el("div", "fill");
+    Object.assign(textes.style, { minWidth: "0", display: "flex", flexDirection: "column", gap: "2px" });
+    textes.append(el("strong", "", this.titre));
+    const sous = el("span", "hint", etat?.aide ?? nomAppareil());
+    sous.style.margin = "0";
+    textes.append(sous);
+    tete.append(tuile, textes);
+    if (etat) tete.append(el("span", `pill ${etat.variante}`.trim(), etat.pastille));
     carte.append(tete);
 
-    const texte = document.createElement("p");
-    texte.className = "hint";
-    texte.style.margin = "0";
-    texte.textContent = cle ? MESSAGES[cle] : "Chargement…";
-    carte.append(texte);
-
-    const actions = document.createElement("div");
-    actions.className = "row";
-    actions.style.flexWrap = "wrap";
-    actions.style.gap = "8px";
+    const actions = el("div", "row");
+    Object.assign(actions.style, { flexWrap: "wrap", gap: "8px" });
     if (cle === "inactif") {
       actions.append(this.#bouton("Activer", "btn-primary", async () => {
         await activerPush({ base: this.base });
@@ -291,15 +311,14 @@ class SoclePush extends HTMLElement {
     if (actions.childElementCount) carte.append(actions);
 
     if (this.#message) {
-      const m = document.createElement("p");
-      m.className = this.#message.erreur ? "banner banner-error" : "banner banner-ok";
+      const m = el("p", this.#message.erreur ? "banner banner-error" : "banner banner-ok", this.#message.texte);
       m.setAttribute("role", this.#message.erreur ? "alert" : "status");
       m.style.margin = "0";
-      m.textContent = this.#message.texte;
       carte.append(m);
     }
     this.replaceChildren(carte);
   }
+
 }
 
 if (typeof window !== "undefined") {
