@@ -8,7 +8,9 @@
 //
 // Pour chaque application (dossier qui contient frontend/public/favicon.svg) :
 // - crée dans frontend/public/ :
-//     apple-touch-icon.png    180×180 : iOS (« Sur l'écran d'accueil »), qui n'accepte pas le SVG ;
+//     apple-touch-icon.png    512×512 : iOS (« Sur l'écran d'accueil »), qui n'accepte pas le SVG. Apple
+//                             documente 180×180, mais les icônes récentes (taille « Grande ») sont plus grandes :
+//                             iOS agrandit alors l'image et la pixellise ; il réduit sans perte une image plus grande ;
 //     icone-192.png, icone-512.png    : Android et Chrome (manifest, « any ») ;
 //     icone-maskable-512.png          : Android, pictogramme réduit pour tenir dans le masque (cercle, goutte…) ;
 //   tous à fond plein et sans coins arrondis : le système applique lui-même sa forme ;
@@ -24,6 +26,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 
 const require = createRequire(import.meta.url);
 let Resvg;
@@ -39,7 +42,7 @@ try {
 const ECHELLE_MASKABLE = 0.8;
 
 export const FICHIERS = [
-  { nom: "apple-touch-icon.png", taille: 180 },
+  { nom: "apple-touch-icon.png", taille: 512 },
   { nom: "icone-192.png", taille: 192 },
   { nom: "icone-512.png", taille: 512 },
   { nom: "icone-maskable-512.png", taille: 512, echelle: ECHELLE_MASKABLE },
@@ -114,9 +117,13 @@ function formater(objet) {
 }
 
 /** Ajoute les balises manquantes juste après le lien vers le favicon (ou avant </head>). */
-export function majIndex(html, { nom, couleurTheme }) {
+export function majIndex(html, { nom, couleurTheme, version }) {
   const balises = [];
-  if (!/rel="apple-touch-icon"/.test(html)) balises.push('<link rel="apple-touch-icon" href="/apple-touch-icon.png" />');
+  // ?v=<empreinte de l'image> : iOS garde l'icône en cache par URL ; une nouvelle image change l'URL.
+  const lienApple = `<link rel="apple-touch-icon" href="/apple-touch-icon.png${version ? `?v=${version}` : ""}" />`;
+  const existant = /<link\b[^>]*rel="apple-touch-icon"[^>]*>/;
+  if (existant.test(html)) html = html.replace(existant, lienApple);
+  else balises.push(lienApple);
   if (!/rel="manifest"/.test(html)) balises.push('<link rel="manifest" href="/manifest.webmanifest" />');
   if (!/name="apple-mobile-web-app-title"/.test(html))
     balises.push(`<meta name="apple-mobile-web-app-title" content="${nom}" />`);
@@ -152,7 +159,12 @@ function traiter(racine, nomDossier, couleursTheme) {
   const pub = join(front, "public");
   const svg = readFileSync(join(pub, "favicon.svg"), "utf8");
   const parties = decomposer(svg);
-  for (const f of FICHIERS) writeFileSync(join(pub, f.nom), png(composer(parties, f.echelle ?? 1), f.taille));
+  let version;
+  for (const f of FICHIERS) {
+    const image = png(composer(parties, f.echelle ?? 1), f.taille);
+    writeFileSync(join(pub, f.nom), image);
+    if (f.nom === "apple-touch-icon.png") version = createHash("sha256").update(image).digest("hex").slice(0, 8);
+  }
 
   const cheminIndex = join(front, "index.html");
   const { texte: html, crlf: crlfIndex } = lire(cheminIndex);
@@ -162,7 +174,7 @@ function traiter(racine, nomDossier, couleursTheme) {
   const cheminManifest = join(pub, "manifest.webmanifest");
   const ancien = existsSync(cheminManifest) ? lire(cheminManifest) : { texte: "", crlf: crlfIndex };
   ecrire(cheminManifest, majManifest(ancien.texte, { nom, couleurTheme }), ancien.crlf);
-  ecrire(cheminIndex, majIndex(html, { nom, couleurTheme }), crlfIndex);
+  ecrire(cheminIndex, majIndex(html, { nom, couleurTheme, version }), crlfIndex);
   console.log(`${nomDossier} : ${FICHIERS.map((f) => f.nom).join(", ")}, manifest, index.html`);
 }
 
