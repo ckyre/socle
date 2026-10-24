@@ -47,6 +47,8 @@ jobs:
         run: |
           npm install --no-save --no-package-lock tailwindcss@4.3.3 @tailwindcss/node@4.3.3
           node scripts/verifier-css.mjs
+      - name: Vérification du JS (notifications push)
+        run: for f in js/*.js scripts/*.mjs; do node --check "$f"; done
 
   version:
     needs: [tests, css]

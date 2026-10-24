@@ -1,5 +1,19 @@
 # Historique
 
+## 1.2.0
+
+- **Notifications push** (Web Push), côté navigateur :
+  - `socle/push` : élément `<socle-push>` (état de l'appareil, activer, envoyer un essai, désactiver ; message
+    d'aide sur iPhone hors écran d'accueil ou quand les notifications sont bloquées), fonctions `activerPush`,
+    `desactiverPush`, `testerPush`, `etatPush`, `synchroniserPush`, `effacerPastille` ; types TypeScript, y compris
+    pour `<socle-push>` dans le JSX ;
+  - `socle/vite` : greffon qui sert le service worker commun sous `/socle-sw.js` (développement et build) ;
+  - service worker : affiche la notification, ouvre son lien (dans la fenêtre déjà ouverte si possible), pose la
+    pastille de l'icône, réabonne l'appareil quand le navigateur renouvelle son abonnement.
+- `scripts/icones.mjs` : icônes d'écran d'accueil (iOS 512 px, Android 192/512 et maskable), manifest et balises
+  d'`index.html` de chaque application.
+- Le paquet npm est un module ES (`"type": "module"`).
+
 ## 1.1.0
 
 - **CSS commun de la suite, construit sur Tailwind 4, mobile d'abord** (`socle/suite.css`). C'est la charpente

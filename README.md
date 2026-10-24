@@ -16,6 +16,9 @@ Le dépôt est public : il ne contient aucun secret. La sécurité repose sur le
 | `socle.passerelle` | Refuse toute requête qui ne porte pas le secret de la passerelle du portail (`X-Gateway-Secret`), sauf les chemins publics déclarés (test de santé). Ajoute `X-Robots-Tag`. Valide le secret au démarrage. Lit l'identité transmise (`Remote-User`, `Remote-Name`, `Remote-Email`, `Remote-Groups`). |
 | `socle.transfert` | Export/import JSON d'une base vers une autre, en une transaction, uniquement vers une base vide. Inactif tant qu'une application ne le branche pas. |
 | `css/suite.css` | CSS commun de la suite, construit sur Tailwind 4 et mobile d'abord : jetons d'identité dans `@theme`, coquille mobile (`.app`, `.screen`, `.nav`, `.sheet`…), composants (`.btn`, `.input`, `.card`…) et primitives d'agencement. Voir [`css/README.md`](css/README.md). |
+| `js/push.js` (`socle/push`) | Notifications push côté navigateur : élément `<socle-push>` (activer, tester, désactiver sur cet appareil), fonctions `activerPush`, `etatPush`…, pastille de l'icône effacée à l'ouverture. |
+| `js/sw.js`, `js/vite.js` (`socle/vite`) | Service worker commun (affiche les notifications, ouvre leur lien, pose la pastille) et greffon Vite qui le sert sous `/socle-sw.js`. |
+| `scripts/icones.mjs` | Icônes d'écran d'accueil iOS et Android de chaque application, tirées de son `favicon.svg`. |
 | `css/socle.css` | Base d'accessibilité seule (déjà incluse dans `suite.css`) : focus visible, `.sr-only` / `.visually-hidden`, mouvements réduits, `[hidden]`, `box-sizing`. |
 
 ## Utilisation dans une application
@@ -63,6 +66,24 @@ user = identity(request.headers, get_settings().gateway_secret)   # Identity(use
 Avec le plugin `@tailwindcss/vite` (ou `@tailwindcss/postcss`). Guide complet, jetons, composants et
 correspondance des anciennes classes : [`css/README.md`](css/README.md). Les applications qui n'ont pas encore
 migré gardent `@import "socle/socle.css";` (accessibilité seule), qui reste disponible.
+
+**Notifications push** (applications qui envoient des notifications) :
+
+```ts
+// vite.config.ts
+import socle from "socle/vite";
+export default defineConfig({ plugins: [react(), tailwindcss(), socle()] });   // sert /socle-sw.js
+
+// main.tsx
+import "socle/push";
+
+// là où l'utilisateur règle ses notifications
+<socle-push />
+```
+
+L'abonnement passe par `/__notifications/push` sur le sous-domaine de l'application : la passerelle vérifie la
+session et le transmet au service de notifications (`NOTIFICATIONS_UPSTREAM`). Rien à faire côté backend. Sur iPhone,
+`<socle-push>` explique qu'il faut d'abord ajouter l'application à l'écran d'accueil.
 
 ## Publier une version
 
