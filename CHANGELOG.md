@@ -1,5 +1,12 @@
 # Historique
 
+## 1.2.1
+
+- Retrait de la dépendance « peer » facultative à `vite` : elle faisait échouer `npm install` dans certaines
+  applications (erreur interne de npm « Cannot read properties of null (reading 'edgesOut') »). Le greffon
+  `socle/vite` n'importe rien de Vite.
+- `scripts/mettre-a-jour.py` : une application en échec n'arrête plus les suivantes ; elles sont listées à la fin.
+
 ## 1.2.0
 
 - **Notifications push** (Web Push), côté navigateur :

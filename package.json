@@ -1,6 +1,6 @@
 {
   "name": "socle",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Code commun aux fronts de la suite : CSS (Tailwind 4 : jetons, base, coquille mobile, composants), notifications push (module navigateur, service worker, greffon Vite).",
   "license": "UNLICENSED",
   "private": false,
@@ -36,14 +36,10 @@
     "./package.json": "./package.json"
   },
   "peerDependencies": {
-    "tailwindcss": "^4.1.0",
-    "vite": ">=5"
+    "tailwindcss": "^4.1.0"
   },
   "peerDependenciesMeta": {
     "tailwindcss": {
-      "optional": true
-    },
-    "vite": {
       "optional": true
     }
   }

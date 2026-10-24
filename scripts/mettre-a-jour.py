@@ -50,13 +50,21 @@ def main() -> int:
         nouveau = re.sub(r"(?m)^socle @ \S+$", ligne, texte)
         if nouveau != texte:
             req.write_text(nouveau, encoding="utf-8", newline="")
-            print(f"Python : {req.relative_to(racine)}")
+            print(f"Python : {req.relative_to(racine)}", flush=True)
+    echecs = []
     for pkg in fichiers(racine, "package.json"):
         deps = json.loads(pkg.read_text(encoding="utf-8")).get("dependencies", {})
         if "socle" in deps and pkg.parent.name != "socle":
-            subprocess.run(["npm", "install", "--save-exact", f"socle@{url_css}"], cwd=pkg.parent, check=True,
-                           shell=sys.platform == "win32")
-            print(f"CSS : {pkg.relative_to(racine)}")
+            r = subprocess.run(["npm", "install", "--save-exact", f"socle@{url_css}"], cwd=pkg.parent,
+                               shell=sys.platform == "win32")
+            if r.returncode == 0:
+                print(f"CSS : {pkg.relative_to(racine)}", flush=True)
+            else:
+                print(f"[x] CSS : {pkg.relative_to(racine)} : npm install a échoué", flush=True)
+                echecs.append(str(pkg.relative_to(racine)))
+    if echecs:
+        print(f"\nÀ reprendre : {', '.join(echecs)}")
+        return 1
     print(f"\nSocle {tag} référencé. Lancez les tests de chaque application, puis commitez et poussez.")
     return 0
 
