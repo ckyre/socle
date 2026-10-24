@@ -1,5 +1,11 @@
 # Historique
 
+## 1.2.2
+
+- `<socle-push>` : les propriétés `base` et `titre` acceptent une valeur. React 19 passe les attributs d'un élément
+  personnalisé comme propriétés : `<socle-push base="…">` plantait la page (« setting getter-only property »).
+  Un changement d'attribut après l'affichage est pris en compte.
+
 ## 1.2.1
 
 - Retrait de la dépendance « peer » facultative à `vite` : elle faisait échouer `npm install` dans certaines

@@ -170,14 +170,38 @@ class SoclePush extends HTMLElement {
   #occupe = false;
   #message = null; // { texte, erreur }
 
+  static observedAttributes = ["base", "titre"];
+
+  // React 19 passe les attributs d'un élément personnalisé comme propriétés quand elles existent : chaque
+  // propriété a donc un mutateur, qui la reporte sur l'attribut.
   get base() {
     return this.getAttribute("base") || BASE_PAR_DEFAUT;
+  }
+
+  set base(valeur) {
+    if (valeur == null) this.removeAttribute("base");
+    else this.setAttribute("base", String(valeur));
+  }
+
+  get titre() {
+    return this.getAttribute("titre") || "Notifications sur cet appareil";
+  }
+
+  set titre(valeur) {
+    if (valeur == null) this.removeAttribute("titre");
+    else this.setAttribute("titre", String(valeur));
   }
 
   connectedCallback() {
     if (!this.style.display) this.style.display = "block";
     this.#rendre();
     this.#charger(true);
+  }
+
+  attributeChangedCallback(nom, avant, apres) {
+    if (!this.isConnected || avant === apres) return;
+    if (nom === "base") this.#charger(true);
+    else this.#rendre();
   }
 
   async #charger(synchroniser = false) {
@@ -226,7 +250,7 @@ class SoclePush extends HTMLElement {
     const tete = document.createElement("div");
     tete.className = "spread";
     const titre = document.createElement("strong");
-    titre.textContent = this.getAttribute("titre") || "Notifications sur cet appareil";
+    titre.textContent = this.titre;
     tete.append(titre);
     if (cle === "actif") {
       const pastille = document.createElement("span");
