@@ -3,6 +3,8 @@ import type { Plugin } from "vite";
 export declare const SW_PATH: string;
 /** Durée de référence du cycle d'ouverture : les pourcentages des gestes (ouverture.css) s'y rapportent. */
 export declare const CYCLE_OUVERTURE: string;
+/** Délai minimal avant l'ouverture, en millisecondes (fin du geste plus une courte pause). */
+export declare const DELAI_OUVERTURE: number;
 
 export interface OptionsOuverture {
   /** Couleur du calque d'ouverture. Défaut : background_color du manifest de public/. */

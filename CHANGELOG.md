@@ -1,5 +1,10 @@
 # Historique
 
+## 1.4.1
+
+- Animation d'ouverture : l'application s'ouvre au plus tôt à 0,95 s au lieu de 0,75 s. Le geste finit toujours à
+  0,75 s ; l'icône reste 0,2 s au repos pour qu'on le voie en entier avant le fondu (`DELAI_OUVERTURE`).
+
 ## 1.4.0
 
 - **Animation d'ouverture de la suite** (« Éclosion + geste ») dans le greffon `socle/vite` : `socle()` l'ajoute
@@ -8,7 +13,8 @@
   suivi du geste propre à l'application (`frontend/ouverture.css`), et un petit script synchrone :
   - démarrage à froid seulement (`sessionStorage`), `?ouverture` dans l'adresse pour la rejouer ;
   - « réduire les animations » du système : simple fondu ;
-  - l'application s'ouvre dès que React a rempli `#root`, pas avant 0,75 s (fin du geste) ; secours à 8 s ;
+  - l'application s'ouvre dès que React a rempli `#root`, pas avant 0,75 s (fin du geste ; 0,95 s depuis 1.4.1) ;
+    secours à 8 s ;
   - fond du calque : `background_color` du manifest (option `fond`).
   Option `externe: true` (portail) : CSS et script dans `/socle-ouverture.css` et `/socle-ouverture.js`, pour une
   CSP sans `'unsafe-inline'`. Le geste : groupes `class="o-…"` dans `favicon.svg`, keyframes dans `ouverture.css`

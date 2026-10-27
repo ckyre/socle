@@ -20,7 +20,8 @@
 //   l'icône (public/favicon.svg) en ligne.
 // Le script ne joue l'animation qu'au démarrage à froid de l'onglet (sessionStorage ; « ?ouverture » dans l'adresse
 // la force, pour les essais), réduit tout à un fondu si le système demande moins d'animations, et ouvre
-// l'application dès que React a rempli #root, mais pas avant 0,75 s (fin du geste). Délai de secours : 8 s.
+// l'application dès que React a rempli #root, mais pas avant 0,95 s : le geste finit à 0,75 s et l'icône reste
+// 0,2 s au repos pour qu'on le voie en entier. Délai de secours : 8 s.
 
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -31,6 +32,9 @@ export const SW_PATH = "/socle-sw.js";
 
 /** Durée de référence du cycle : les pourcentages des gestes (ouverture.css) s'y rapportent. */
 export const CYCLE_OUVERTURE = "2.2s";
+
+/** Délai minimal avant l'ouverture (ms) : fin du geste (0,75 s) plus 0,2 s de pause, l'icône au repos. */
+export const DELAI_OUVERTURE = 950;
 
 const COURBE = "cubic-bezier(.4,0,.2,1)";
 
@@ -55,7 +59,7 @@ try{if(!/[?&]ouverture\\b/.test(location.search)){if(sessionStorage.getItem(K))r
 d.classList.add("so-oui");
 try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("so-reduit");}catch(e){}
 var t0=Date.now(),fini=false;
-function ouvrir(){if(fini)return;fini=true;var reste=d.classList.contains("so-reduit")?0:Math.max(0,750-(Date.now()-t0));
+function ouvrir(){if(fini)return;fini=true;var reste=d.classList.contains("so-reduit")?0:Math.max(0,${DELAI_OUVERTURE}-(Date.now()-t0));
 setTimeout(function(){d.classList.add("so-ouvre");setTimeout(function(){var e=document.getElementById(K);if(e&&e.parentNode)e.parentNode.removeChild(e);d.classList.remove("so-oui","so-ouvre","so-reduit");},320);},reste);}
 function guetter(){var r=document.getElementById(R);if(!r||r.firstElementChild){ouvrir();return;}
 new MutationObserver(function(m,o){if(r.firstElementChild){o.disconnect();requestAnimationFrame(function(){requestAnimationFrame(ouvrir);});}}).observe(r,{childList:true});}
