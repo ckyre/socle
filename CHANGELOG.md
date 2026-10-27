@@ -1,5 +1,19 @@
 # Historique
 
+## 1.4.0
+
+- **Animation d'ouverture de la suite** (« Éclosion + geste ») dans le greffon `socle/vite` : `socle()` l'ajoute
+  d'office ; `ouverture()` seule pour les applications qui n'utilisent pas `/socle-sw.js`. Au build, `index.html`
+  reçoit en ligne l'icône (`public/favicon.svg`), le CSS de la mise en scène commune (tassement, rebond, ouverture)
+  suivi du geste propre à l'application (`frontend/ouverture.css`), et un petit script synchrone :
+  - démarrage à froid seulement (`sessionStorage`), `?ouverture` dans l'adresse pour la rejouer ;
+  - « réduire les animations » du système : simple fondu ;
+  - l'application s'ouvre dès que React a rempli `#root`, pas avant 0,75 s (fin du geste) ; secours à 8 s ;
+  - fond du calque : `background_color` du manifest (option `fond`).
+  Option `externe: true` (portail) : CSS et script dans `/socle-ouverture.css` et `/socle-ouverture.js`, pour une
+  CSP sans `'unsafe-inline'`. Le geste : groupes `class="o-…"` dans `favicon.svg`, keyframes dans `ouverture.css`
+  en pourcentages d'un cycle de 2,2 s (`CYCLE_OUVERTURE`), entre 8 % et 34 %.
+
 ## 1.3.0
 
 - **`socle.notifications`** (Python, bibliothèque standard seulement) : `Notifier` envoie une notification au

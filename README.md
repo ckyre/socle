@@ -18,7 +18,7 @@ Le dépôt est public : il ne contient aucun secret. La sécurité repose sur le
 | `socle.transfert` | Export/import JSON d'une base vers une autre, en une transaction, uniquement vers une base vide. Inactif tant qu'une application ne le branche pas. |
 | `css/suite.css` | CSS commun de la suite, construit sur Tailwind 4 et mobile d'abord : jetons d'identité dans `@theme`, coquille mobile (`.app`, `.screen`, `.nav`, `.sheet`…), composants (`.btn`, `.input`, `.card`…) et primitives d'agencement. Voir [`css/README.md`](css/README.md). |
 | `js/push.js` (`socle/push`) | Notifications push côté navigateur : élément `<socle-push>` (activer, tester, désactiver sur cet appareil), fonctions `activerPush`, `etatPush`…, pastille de l'icône effacée à l'ouverture. |
-| `js/sw.js`, `js/vite.js` (`socle/vite`) | Service worker commun (affiche les notifications, ouvre leur lien, pose la pastille) et greffon Vite qui le sert sous `/socle-sw.js`. |
+| `js/sw.js`, `js/vite.js` (`socle/vite`) | Service worker commun (affiche les notifications, ouvre leur lien, pose la pastille) et greffon Vite qui le sert sous `/socle-sw.js`. Le greffon ajoute aussi l'animation d'ouverture (`ouverture()`). |
 | `scripts/icones.mjs` | Icônes d'écran d'accueil iOS et Android de chaque application, tirées de son `favicon.svg`. |
 | `css/socle.css` | Base d'accessibilité seule (déjà incluse dans `suite.css`) : focus visible, `.sr-only` / `.visually-hidden`, mouvements réduits, `[hidden]`, `box-sizing`. |
 
@@ -85,6 +85,32 @@ import "socle/push";
 L'abonnement passe par `/__notifications/push` sur le sous-domaine de l'application : la passerelle vérifie la
 session et le transmet au service de notifications (`NOTIFICATIONS_UPSTREAM`). Rien à faire côté backend. Sur iPhone,
 `<socle-push>` explique qu'il faut d'abord ajouter l'application à l'écran d'accueil.
+
+## Animation d'ouverture
+
+`socle()` l'ajoute d'office ; une application sans `/socle-sw.js` utilise `ouverture()` seule :
+
+```ts
+// vite.config.ts
+import { ouverture } from "socle/vite";
+export default defineConfig({ plugins: [react(), ouverture()] });
+```
+
+Rien à écrire dans le code React : l'animation se retire d'elle-même quand `#root` se remplit. Chaque application
+fournit son geste :
+
+- dans `public/favicon.svg`, les formes animées sont dans un groupe `<g class="o-porte">` **sans attribut
+  `transform`** (une transformation CSS le remplacerait ; envelopper au besoin). Le rendu statique ne change pas ;
+- dans `frontend/ouverture.css`, les keyframes, en pourcentages d'un cycle de 2,2 s, entre 8 % et 34 % :
+
+```css
+#socle-ouverture .o-porte { transform-origin: 28px 44px; animation-name: o-porte; }
+@keyframes o-porte { 0%, 8% { transform: scaleX(1) } 20%, 88% { transform: scaleX(.15) } 94%, 100% { transform: scaleX(1) } }
+```
+
+`transform-box: view-box`, la durée et la courbe sont fixés par le socle ; les origines sont en unités du `viewBox`.
+Pour revoir l'animation : ajouter `?ouverture` à l'adresse (sinon elle ne se joue qu'une fois par onglet). Règles
+esthétiques et vocabulaire des gestes : `claude/ouverture-suite.md` du projet « Suite personnelle ».
 
 ## Publier une version
 
