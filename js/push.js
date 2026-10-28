@@ -164,7 +164,7 @@ export function effacerPastille() {
 
 // État affiché : pastille (texte, variante) et, seulement quand l'utilisateur doit agir, une ligne d'aide courte.
 const ETATS = {
-  actif: { pastille: "Activées", variante: "pill-ok" },
+  actif: {}, // pas de pastille : les boutons « Envoyer un essai » et « Désactiver » (pictogrammes) prennent sa place
   inactif: {}, // pas de pastille : le bouton « Activer » prend sa place
   refuse: { pastille: "Bloquées", variante: "pill-warn", aide: "À autoriser dans les réglages de l'appareil." },
   installer: { pastille: "Indisponible", variante: "", aide: "Ajoutez d'abord l'application à l'écran d'accueil." },
@@ -172,10 +172,12 @@ const ETATS = {
   "non-configure": { pastille: "Indisponible", variante: "", aide: "Push non configuré sur le serveur." },
 };
 
-// Pictogrammes Lucide (licence ISC, lucide.dev) : téléphone ou écran selon l'appareil.
+// Pictogrammes Lucide (licence ISC, lucide.dev) : téléphone ou écran selon l'appareil, et actions (essai, désactiver).
 const PICTOS = {
   telephone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
   ecran: '<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>',
+  envoyer: '<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>',
+  "cloche-barree": '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M17 17H4a1 1 0 0 1-.74-1.673C4.59 13.956 6 12.499 6 8a6 6 0 0 1 .258-1.742"/><path d="m2 2 20 20"/><path d="M8.668 3.01A6 6 0 0 1 18 8c0 2.687.77 4.653 1.707 6.05"/>',
 };
 
 function picto(nom) {
@@ -264,6 +266,19 @@ class SoclePush extends HTMLElement {
     return b;
   }
 
+  // Bouton rond à pictogramme seul : le libellé sert d'aria-label et d'infobulle.
+  #boutonPicto(libelle, nom, action) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "icon-btn";
+    b.setAttribute("aria-label", libelle);
+    b.title = libelle;
+    b.append(picto(nom));
+    b.disabled = this.#occupe;
+    b.addEventListener("click", () => this.#agir(action));
+    return b;
+  }
+
   #rendre() {
     const e = this.#etat;
     const cle = !e ? null : e.possible !== "ok" ? e.possible : e.configure === false ? "non-configure"
@@ -296,27 +311,25 @@ class SoclePush extends HTMLElement {
         await activerPush({ base: this.base });
         return { texte: "Notifications activées." };
       }));
-    } else if (etat?.pastille) {
-      tete.append(el("span", `pill ${etat.variante}`.trim(), etat.pastille));
-    }
-    carte.append(tete);
-
-    const actions = el("div", "row");
-    Object.assign(actions.style, { flexWrap: "wrap", gap: "8px" });
-    if (cle === "actif") {
+    } else if (cle === "actif") {
+      const actions = el("div", "row");
+      Object.assign(actions.style, { flex: "none", gap: "4px" });
       actions.append(
-        this.#bouton("Envoyer un essai", "btn-soft", async () => {
+        this.#boutonPicto("Envoyer un essai", "envoyer", async () => {
           const n = await testerPush({ base: this.base });
           return n ? { texte: "Essai envoyé : il arrive dans quelques secondes." }
             : { texte: "L'essai n'a atteint aucun appareil : désactivez puis réactivez.", erreur: true };
         }),
-        this.#bouton("Désactiver", "btn-ghost", async () => {
+        this.#boutonPicto("Désactiver les notifications", "cloche-barree", async () => {
           await desactiverPush({ base: this.base });
           return { texte: "Notifications désactivées sur cet appareil." };
         }),
       );
+      tete.append(actions);
+    } else if (etat?.pastille) {
+      tete.append(el("span", `pill ${etat.variante}`.trim(), etat.pastille));
     }
-    if (actions.childElementCount) carte.append(actions);
+    carte.append(tete);
 
     if (this.#message) {
       const m = el("p", this.#message.erreur ? "banner banner-error" : "banner banner-ok", this.#message.texte);

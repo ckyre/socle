@@ -1,5 +1,12 @@
 # Historique
 
+## 1.4.2
+
+- `<socle-push>` : une fois les notifications activées, « Envoyer un essai » et « Désactiver » deviennent deux
+  boutons ronds à pictogramme (Lucide `send` et `bell-off`, avec `aria-label` et infobulle), placés à droite de la
+  ligne « Cet appareil », à la place du bouton « Activer ». La pastille « Activées » et la ligne de boutons en
+  dessous disparaissent.
+
 ## 1.4.1
 
 - Animation d'ouverture : l'application s'ouvre au plus tôt à 0,95 s au lieu de 0,75 s. Le geste finit toujours à
