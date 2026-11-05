@@ -1,5 +1,19 @@
 # Historique
 
+## 1.5.0
+
+- **`socle.ia`** (Python, bibliothèque standard seulement) : client du service IA, accès mutualisé à l'API Claude
+  (dépôt `ckyre/ia`). `client_ia(url, key)` donne un `ClientIA` (ou un `ClientFactice` si l'URL vaut `factice`) :
+  - `tache(nom, entree, utilisateur=None)` → `Resultat` (`resultat` : sortie validée par le schéma de la tâche,
+    `usage` : modèle, tokens, coût). Une reprise si le service est momentanément indisponible, avec la même clé
+    d'idempotence (pas de double facturation) ; aucune après un délai dépassé ;
+  - `lot(nom, elements)` et `etat_lot(id)` → `Lot` (`en_cours`, `termine`, `par_ref()`) : API Batch, moitié prix ;
+  - `taches()`, `usage(mois)` ;
+  - erreurs typées : `EntreeInvalide`, `CleRefusee`, `TacheInconnue`, `EntreeTropLongue`, `SortieInvalide`,
+    `BudgetAtteint`, `TropDeRequetes`, `Indisponible`, toutes `ErreurIA` (`code`, `status`, `permanent`) ;
+  - `ClientFactice` pour les tests : réponses préparées par tâche (sortie, fonction de l'entrée ou exception à
+    lever), appels reçus dans `appels`, lots terminés tout de suite.
+
 ## 1.4.2
 
 - `<socle-push>` : une fois les notifications activées, « Envoyer un essai » et « Désactiver » deviennent deux

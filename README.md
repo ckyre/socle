@@ -1,7 +1,7 @@
 # Socle
 
 Code commun aux applications de la suite (Besace, Charge, Codex, Fund, Hotte, Logis, Mijote, Vigie, Notifications, Fichiers,
-Portail).
+IA, Portail).
 Une correction faite ici, publiée dans une nouvelle version, profite à toutes les applications : il suffit de
 mettre à jour la référence de version dans chacune (`scripts/mettre-a-jour.py`).
 
@@ -15,6 +15,7 @@ Le dépôt est public : il ne contient aucun secret. La sécurité repose sur le
 | `socle.serve` | Démarre une application ASGI sur `$PORT` en IPv4 et IPv6 (Railway : réseau privé IPv6, test de santé IPv4), sans en-tête `Server`, sans faire confiance aux en-têtes `X-Forwarded-*`. |
 | `socle.passerelle` | Refuse toute requête qui ne porte pas le secret de la passerelle du portail (`X-Gateway-Secret`), sauf les chemins publics déclarés (test de santé). Ajoute `X-Robots-Tag`. Valide le secret au démarrage. Lit l'identité transmise (`Remote-User`, `Remote-Name`, `Remote-Email`, `Remote-Groups`). |
 | `socle.notifications` | Envoi d'une notification au service Notifications (`Notifier`) et tâche de fond périodique (`Periodic`) pour les rappels planifiés. |
+| `socle.ia` | Client du service IA (accès mutualisé à l'API Claude) : `client_ia(url, key).tache("charge.seance", {...})`, lots, erreurs typées (`BudgetAtteint`, `SortieInvalide`…), `ClientFactice` pour les tests. Voir ci-dessous. |
 | `socle.transfert` | Export/import JSON d'une base vers une autre, en une transaction, uniquement vers une base vide. Inactif tant qu'une application ne le branche pas. |
 | `css/suite.css` | CSS commun de la suite, construit sur Tailwind 4 et mobile d'abord : jetons d'identité dans `@theme`, coquille mobile (`.app`, `.screen`, `.nav`, `.sheet`…), composants (`.btn`, `.input`, `.card`…) et primitives d'agencement. Voir [`css/README.md`](css/README.md). |
 | `js/push.js` (`socle/push`) | Notifications push côté navigateur : élément `<socle-push>` (activer, tester, désactiver sur cet appareil), fonctions `activerPush`, `etatPush`…, pastille de l'icône effacée à l'ouverture. |
@@ -85,6 +86,47 @@ import "socle/push";
 L'abonnement passe par `/__notifications/push` sur le sous-domaine de l'application : la passerelle vérifie la
 session et le transmet au service de notifications (`NOTIFICATIONS_UPSTREAM`). Rien à faire côté backend. Sur iPhone,
 `<socle-push>` explique qu'il faut d'abord ajouter l'application à l'écran d'accueil.
+
+## Service IA (`socle.ia`)
+
+Les applications qui portent le label `suite.ia` (infra) reçoivent `<PREFIXE>IA_URL` (`http://ia:8080`) et
+`<PREFIXE>IA_KEY`. Elles appellent des **tâches nommées** du service `ia` ; le prompt et le schéma de chaque tâche
+vivent dans le dépôt `ckyre/ia`, l'application n'envoie que des données :
+
+```python
+from socle.ia import BudgetAtteint, ErreurIA, client_ia
+from socle.notifications import portal_username
+
+ia = client_ia(settings.ia_url, settings.ia_key)
+
+@router.post("/api/seances/suggestion")
+def suggerer(corps: TexteLibre, identite=Depends(identity)):   # def : l'appel est bloquant (65 s au plus)
+    if not ia.configured:
+        raise HTTPException(404, "Saisie assistée non configurée.")
+    try:
+        r = ia.tache("charge.seance", {"texte": corps.texte, "date": date.today().isoformat(),
+                                       "disciplines": DISCIPLINES}, utilisateur=portal_username(identite.sub))
+    except BudgetAtteint:
+        raise HTTPException(429, "Saisie assistée indisponible ce mois-ci.")
+    except ErreurIA as e:
+        raise HTTPException(502, e.message)
+    return r.resultat   # une suggestion : la personne la valide avant tout enregistrement
+```
+
+Chaque fonction IA garde un chemin manuel : une erreur masque le bouton, elle ne bloque pas l'écran. Lots (moitié
+prix, en moins de 24 h) : `ia.lot("charge.bilan", [{"ref": …, "entree": …}])`, puis `ia.etat_lot(id)` depuis une
+tâche `Periodic`.
+
+**Tests** : `<PREFIXE>IA_URL=factice` (ou `ClientFactice()`) répond sans réseau :
+
+```python
+factice = ClientFactice()
+factice.repondre("charge.seance", {"discipline": "course", "duree_min": 55, …})  # ou une fonction, ou une ErreurIA
+monkeypatch.setattr(app_module, "ia", factice)
+```
+
+Les exemples de chaque tâche (`GET /v1/taches` du service, ou le module de la tâche dans `ckyre/ia`) font de bonnes
+réponses préparées, et servent aussi au mode démo du front.
 
 ## Animation d'ouverture
 
